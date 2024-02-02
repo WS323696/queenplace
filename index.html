@@ -41,6 +41,10 @@
       color: white;
     }
 
+    .borderless {
+      border: none; /* Added class to remove border */
+    }
+
     .white {
       background-color: #eee;
     }
@@ -64,9 +68,11 @@
       justify-content: center;
       font-size: 1.2em;
       color: white;
+      border: none; /* Removed border */
     }
 
-    #resetButton {
+    #resetButton,
+    #solveButton {
       padding: 10px;
       font-size: 1em;
       cursor: pointer;
@@ -74,9 +80,11 @@
       color: white;
       border: none;
       border-radius: 5px;
+      margin-bottom: 10px;
     }
 
-    #resetButton:hover {
+    #resetButton:hover,
+    #solveButton:hover {
       background-color: #097bdf;
     }
   </style>
@@ -84,6 +92,7 @@
     document.addEventListener('DOMContentLoaded', function () {
       const chessboard = document.getElementById('chessboard');
       const resetButton = document.getElementById('resetButton');
+      const solveButton = document.getElementById('solveButton');
 
       // Function to create chessboard squares
       function createSquare(row, col) {
@@ -92,7 +101,7 @@
         square.classList.add((row + col) % 2 === 0 ? 'white' : 'black');
         square.dataset.row = row;
         square.dataset.col = col;
-        square.textContent = ''; // You can set initial piece here if needed
+        square.textContent = ''; // You can set the initial piece here if needed
         square.addEventListener('click', handleSquareClick);
         return square;
       }
@@ -100,7 +109,7 @@
       // Function to create number labels
       function createNumberLabel(number) {
         const label = document.createElement('div');
-        label.classList.add('number-label');
+        label.classList.add('number-label', 'borderless'); // Added class 'borderless'
         label.textContent = number;
         return label;
       }
@@ -108,7 +117,7 @@
       // Function to create letter labels
       function createLetterLabel(letter) {
         const label = document.createElement('div');
-        label.classList.add('letter-label');
+        label.classList.add('letter-label', 'borderless'); // Added class 'borderless'
         label.textContent = letter;
         return label;
       }
@@ -196,11 +205,16 @@
         resetBoard();
       });
 
+      // Solve button click event
+      solveButton.addEventListener('click', function () {
+        solveNQueens();
+      });
+
       // Function to reset the board to its default position
       function resetBoard() {
         const queens = document.querySelectorAll('.queen');
         queens.forEach(queen => queen.remove());
-        placeQueen(0, 0);
+		placeQueen(0, 0);
         placeQueen(0, 2);
         placeQueen(0, 4);
         placeQueen(0, 6);
@@ -210,11 +224,46 @@
         placeQueen(7, 7);
       }
 
+// Function to solve the N-Queens problem
+function solveNQueens() {
+  alert("Solving N-Queens...");
+  const queens = document.querySelectorAll('.queen');
+  queens.forEach(queen => queen.remove());
+
+  // Define the queen positions to be solved one by one
+  const positions = [
+    { row: 7, col: 0 },
+    { row: 1, col: 1 },
+    { row: 4, col: 2 },
+    { row: 2, col: 3 },
+    { row: 0, col: 4 },
+    { row: 6, col: 5 },
+    { row: 3, col: 6 },
+    { row: 5, col: 7 }
+  ];
+
+  // Function to place the queens one by one with a delay
+  function placeQueensOneByOne(index) {
+    if (index < positions.length) {
+      const { row, col } = positions[index];
+      placeQueen(row, col);
+      setTimeout(() => {
+        placeQueensOneByOne(index + 1);
+      }, 500); // Adjust the delay (in milliseconds) between each queen placement
+    } else {
+      // All queens are placed, show the win message
+      alert("Congratulations! You've won!");
+    }
+  }
+
+  // Start placing queens one by one
+  placeQueensOneByOne(0);
+}
+
+
       // Create the chessboard
       for (let row = 0; row < 8; row++) {
-        // Add number labels on the left
-        chessboard.appendChild(createNumberLabel(8 - row));
-
+        chessboard.appendChild(createNumberLabel(8 - row)); // Adjusted row numbering
         for (let col = 0; col < 8; col++) {
           const square = createSquare(row, col);
           chessboard.appendChild(square);
@@ -244,5 +293,6 @@
   <div id="title">N-Queens Problem</div>
   <div id="chessboard"></div>
   <button id="resetButton">Reset Board</button>
+  <button id="solveButton">Solve</button>
 </body>
 </html>
